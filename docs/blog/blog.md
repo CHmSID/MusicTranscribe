@@ -1,13 +1,13 @@
-#Sound Analysis using Fourier Transform
+# Sound Analysis using Fourier Transform
 My application will make use of an algorithm called Fourier Transform, and more specifically, Short-Time Fast Fourier Transform, in order to convert short pieces of audio from time domain into frequency domain.
 
-##The plan for frequency analysis
+## The plan for frequency analysis
 1. Collect a window of audio data (it will have to be an array of a power of 2).
 2. Multiply the data with the window function (most probably I'll use the Hann or Hamming window for this step). This will average out the waveform on the edges of the window. I will have to make it optional as it'll be quite resource intensive to do in real time (30 fps or 33 milliseconds per refresh).
 3. Perform an FFT on the data. The data that I'll receive from this step is still not usable yet though.
 4. Now I have the data about individual frequency powers in arbitrary units. I will have to map them to each piano key. This is a little tough as low piano keys have small differences in frequency, while high piano keys have large differences, ie: the relation is not linear.
 
-##The plan for audio slowdown
+## The plan for audio slowdown
 It's counter-intuitive, but interpolating data in time domain will not slow down the music, even though there's twice as much data to go through.
 Well, it _will_ slow it down, but it'll also halve the pitch of the audio, which is very undesirable in a music transcription software.
 
