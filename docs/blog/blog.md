@@ -1,72 +1,22 @@
-# Blog: MY-PROJECT-TITLE
+#Sound Analysis using Fourier Transform
+My application will make use of an algorithm called Fourier Transform, and more specifically, Short-Time Fast Fourier Transform, in order to convert short pieces of audio from time domain into frequency domain.
 
-**MY-NAME**
+##The plan for frequency analysis
+1. Collect a window of audio data (it will have to be an array of a power of 2).
+2. Multiply the data with the window function (most probably I'll use the Hann or Hamming window for this step). This will average out the waveform on the edges of the window. I will have to make it optional as it'll be quite resource intensive to do in real time (30 fps or 33 milliseconds per refresh).
+3. Perform an FFT on the data. The data that I'll receive from this step is still not usable yet though.
+4. Now I have the data about individual frequency powers in arbitrary units. I will have to map them to each piano key. This is a little tough as low piano keys have small differences in frequency, while high piano keys have large differences, ie: the relation is not linear.
 
-## My First Blog Entry
+##The plan for audio slowdown
+It's counter-intuitive, but interpolating data in time domain will not slow down the music, even though there's twice as much data to go through.
+Well, it _will_ slow it down, but it'll also halve the pitch of the audio, which is very undesirable in a music transcription software.
 
-This is my first blog entry.
+The application must slow the music down, without loosing the pitch information of the original. To achieve that, I need to interpolate the data in the frequency domain, I think. So here's the plan:
 
-The blog is written in [markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet).
-Markdown is a simple text-based mark-up language.
+1. Perform all the steps as above up to running FFT through the data.
+2. Interpolate the data I receive from step 1. I think linear interpolation should suffice, as the data is very dense.
+3. Now I run it through an Inverse Fast Fourier Transform. During this step, the interpolated data is converted back into time domain and will become available to the audio library for playing.
 
-## My Second Blog Entry
+Even though it's 'fast', FFT is still very slow and I'm not sure I will be able to perform both frequency analysis and music slowdown at once. I'm considering providing and option to pre-compute a small piece of audio (around 10 seconds).
 
-This week, I learned how to include
-[images](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#images)
-in my blog.
-
-![cat](https://gitlab.computing.dcu.ie/sblott/2017-ca400-YOUR_NAME/raw/master/docs/blog/images/cat.jpg)
-
-Here are the instructions:
-
-- Add the image to your repo (probably using the `images` sub-directory here).
-  The cat example above is in `./images/cat.jpg`.
-
-- Commit that and push it to your repo.
-
-- On Gitlab, navigate to your new image and click *Raw*.  You get the raw URL of your image.  Copy that URL.
-
-- Add your image to this document using the following format:
-
-    <pre>![alternative text](URL)</pre>
-
-See the example [here](https://gitlab.computing.dcu.ie/sblott/2017-ca400-YOUR_NAME/raw/master/docs/blog/blog.md).
-
-You can also mention other users (like me: @sblott).
-
-## Including Code
-
-Raw text:
-```
-Mary had a little lamb,
-it's fleece was white as snow.
-```
-
-Syntax highlighting is also possible; for example...
-
-Python:
-```python
-i = 0
-while i < len(s):
-   # So something.
-   i = i + 1
-```
-
-Java:
-```java
-for (i=0; i<s.length(); i+=1) {
-   // Do something.
-}
-```
-
-Coffeescript:
-```coffeescript
-i = 0
-while i < s.length
-   # So something.
-   i = i + 1
-```
-
-## Instructions
-
-Once you've understood this sample, replace it with your own blog.
+I will write about Equalizing in the next blog.
