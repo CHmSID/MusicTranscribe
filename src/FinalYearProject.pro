@@ -25,7 +25,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    fft_test.cpp
+    fft_test.cpp \
+    audio.cpp
 
 HEADERS  += mainwindow.h \
-    fft_test.h
+    fft_test.h \
+    audio.h
+
+LIBS += -lopenal -lpthread\
+        -lmpg123
+
+QMAKE_CXXFLAGS += -std=gnu++11 -d
