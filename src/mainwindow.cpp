@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "mainwidget.h"
 
 #include <QLabel>
 #include <QSettings>
@@ -8,6 +9,8 @@ MainWindow::MainWindow(QApplication *parent)
     :parent(parent)
 {
 	setWindowTitle("4th Year Project");
+	mainWidget = new MainWidget(parent, this);
+	setCentralWidget(mainWidget);
 
 	createMenuActions();
 	createMenus();
@@ -82,7 +85,7 @@ void MainWindow::createMenuActions()
 
 	importMusicAction = new QAction("Music", this);
 	connect(importMusicAction, SIGNAL(triggered()),
-	        parent, SLOT(loadMusic()));
+	        mainWidget, SLOT(loadMusic()));
 }
 
 /*

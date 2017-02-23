@@ -26,11 +26,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp\
         mainwindow.cpp \
     fft_test.cpp \
-    audio.cpp
+    audio.cpp \
+    mainwidget.cpp
 
 HEADERS  += mainwindow.h \
     fft_test.h \
-    audio.h
+    audio.h \
+    mainwidget.h
 
 LIBS += -lopenal -lpthread\
         -lmpg123

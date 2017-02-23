@@ -18,6 +18,13 @@ Audio::Audio(const char* filename)
 	setup();
 }
 
+Audio::~Audio()
+{
+	alSourceStop(source);
+	alDeleteSources(1, &source);
+	alDeleteBuffers(5, &buffer[0]);
+}
+
 bool Audio::isPlaying()
 {
 	return playing;

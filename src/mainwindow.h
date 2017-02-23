@@ -11,6 +11,10 @@
 #include <QStatusBar>
 #include <QtWidgets>
 
+#include "mainwidget.h"
+
+class MainWidget;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -22,11 +26,8 @@ public:
 	QLabel* getStatusText() const;
 
 private:
-
-	void createMenuActions();
-	void createMenus();
-
 	QApplication* parent =  nullptr;
+	MainWidget* mainWidget = nullptr;
 	QStatusBar* statusBar = nullptr;
 	QLabel* statusText =    nullptr;
 
@@ -39,6 +40,9 @@ private:
 	QAction* importMusicAction = nullptr;
 	QAction* aboutQtAction =     nullptr;
 	QAction* exitAction =        nullptr;
+
+	void createMenuActions();
+	void createMenus();
 
 protected:
 	void closeEvent(QCloseEvent *event);
