@@ -11,8 +11,6 @@
 #include <QStatusBar>
 #include <QtWidgets>
 
-#include "mainwidget.h"
-
 class MainWidget;
 
 class MainWindow : public QMainWindow

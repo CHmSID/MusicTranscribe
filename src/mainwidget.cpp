@@ -1,7 +1,9 @@
 #include "mainwidget.h"
 
 #include <QApplication>
+#include <QFileDialog>
 #include "mainwindow.h"
+#include "audio.h"
 
 MainWidget::MainWidget(QApplication* parentApp, MainWindow* parentWin)
 {

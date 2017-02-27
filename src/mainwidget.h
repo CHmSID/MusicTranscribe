@@ -4,10 +4,10 @@
 #include <AL/alc.h>
 
 #include <QApplication>
-#include "audio.h"
-#include "mainwindow.h"
+#include <QWidget>
 
 class MainWindow;
+class Audio;
 
 class MainWidget : public QWidget
 {
