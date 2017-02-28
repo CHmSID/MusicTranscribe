@@ -9,14 +9,29 @@ MainWidget::MainWidget(QApplication* parentApp, MainWindow* parentWin)
 {
 	this->parentApp = parentApp;
 	this->parentWin = parentWin;
+
+	logicTimer = new QTimer();
+	connect(logicTimer, SIGNAL(timeout()),
+	        this, SLOT(logic()));
+	logicTimer->start(32);
+
+	playButton = new QPushButton("Play", this);
+	connect(playButton, SIGNAL(released()),
+	        this, SLOT(playMusic()));
+
+	initAudio();
 }
 
 MainWidget::~MainWidget()
 {
+	delete logicTimer;
+
 	if(audio != nullptr)
 		delete audio;
 
 	destroyAudio();
+
+	delete playButton;
 }
 
 void MainWidget::loadMusic()
@@ -50,6 +65,40 @@ void MainWidget::loadMusic()
 	}
 }
 
+void MainWidget::logic()
+{
+	if(audio != nullptr)
+	{
+		if(audio->isPlaying())
+		{
+			audio->update();
+		}
+	}
+}
+
+void MainWidget::playMusic()
+{
+	if(audio != nullptr)
+	{
+		if(!audio->isPlaying())
+		{
+			audio->play();
+		}
+		else
+		{
+			audio->pause();
+		}
+	}
+}
+
+void MainWidget::stopMusic()
+{
+	if(audio != nullptr)
+	{
+		audio->reset();
+	}
+}
+
 void MainWidget::initAudio()
 {
 	const ALCchar* defaultDevice = alcGetString(
@@ -64,8 +113,16 @@ void MainWidget::initAudio()
 	if(alContext == nullptr)
 		printf("Could not create AL Context\n");
 
-	alcMakeContextCurrent(alContext);
+	if(!alcMakeContextCurrent(alContext))
+		qDebug() << "Failed to create context!";
+
 	alcProcessContext(alContext);
+
+	int error = alGetError();
+	while(error != AL_NO_ERROR)
+	{
+		qDebug() << "ERROR! in context creation";
+	}
 }
 
 void MainWidget::destroyAudio()

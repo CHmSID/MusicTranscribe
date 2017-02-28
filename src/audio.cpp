@@ -4,6 +4,8 @@
 #include <vorbis/vorbisfile.h>
 #include <mpg123.h>
 
+#include <QDebug>
+
 #include <fstream>
 #include <string>
 #include <vector>
@@ -32,6 +34,8 @@ bool Audio::isPlaying()
 
 void Audio::setup()
 {
+	alGetError();
+	checkForErrors("audio setup");
 	playing = false;
 	paused = false;
 
@@ -54,6 +58,8 @@ void Audio::setup()
 			format = AL_FORMAT_MONO8;
 		else if (info.bitRate == 16)
 			format = AL_FORMAT_MONO16;
+		else
+			qDebug() << "Wrong bitrate";
 	}
 	else if(info.numChannels == 2)
 	{
@@ -61,7 +67,11 @@ void Audio::setup()
 			format = AL_FORMAT_STEREO8;
 		else if (info.bitRate == 16)
 			format = AL_FORMAT_STEREO16;
+		else
+			qDebug() << "Wrong bitrate";
 	}
+	else
+		qDebug() << "Wrong number of channels";
 
 	size = info.byteRate * 0.1f;
 	freq = info.sampleRate;
@@ -84,7 +94,7 @@ void Audio::pause()
 void Audio::update()
 {
 	alGetSourcei(source, AL_SOURCE_STATE, &state);
-	playing = (state = AL_PLAYING);
+	playing = (state == AL_PLAYING);
 
 	alGetSourcei(source, AL_BUFFERS_PROCESSED, &buffersProcessed);
 
@@ -135,8 +145,8 @@ void Audio::seek(int p)
 
 	bool wasPlaying = isPlaying();
 
-	play();
-	pause();
+	//play();
+	//pause();
 
 	alSourceStop(source);
 	playing = false;
@@ -229,4 +239,35 @@ void Audio::loadOGG()
 void Audio::loadWAV()
 {
 
+}
+
+void Audio::checkForErrors(const char* prefix)
+{
+	ALenum error = alGetError();
+	string errCode;
+
+	while(error != AL_NO_ERROR)
+	{
+		switch(error)
+		{
+			case AL_INVALID_ENUM:
+				errCode = "invalid enum";
+				break;
+			case AL_INVALID_NAME:
+				errCode = "invalid name";
+				break;
+			case AL_INVALID_OPERATION:
+				errCode = "invalid op";
+				break;
+			case AL_INVALID_VALUE:
+				errCode = "invalid value";
+				break;
+			default:
+				errCode = "unknown error";
+				break;
+		}
+
+		qDebug() << "ERROR!in" << prefix << ":" << errCode.c_str();
+		error = alGetError();
+	}
 }

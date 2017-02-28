@@ -76,6 +76,7 @@ private:
 	int currentBuffer;
 
 	void setup();
+	void checkForErrors(const char* prefix);
 
 	void loadWAV();
 	void loadMP3();
