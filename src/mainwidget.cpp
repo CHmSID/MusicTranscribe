@@ -2,8 +2,14 @@
 
 #include <QApplication>
 #include <QFileDialog>
+#include <QSize>
+
 #include "mainwindow.h"
 #include "audio.h"
+#include "keyboardwidget.h"
+#include "spectrumwidget.h"
+#include "waveformwidget.h"
+#include "scrollbar.h"
 
 MainWidget::MainWidget(QApplication* parentApp, MainWindow* parentWin)
 {
@@ -15,9 +21,9 @@ MainWidget::MainWidget(QApplication* parentApp, MainWindow* parentWin)
 	        this, SLOT(logic()));
 	logicTimer->start(32);
 
-	playButton = new QPushButton("Play", this);
-	connect(playButton, SIGNAL(released()),
-	        this, SLOT(playMusic()));
+	createButtons();
+	createWidgets();
+	createLayout();
 
 	initAudio();
 }
@@ -32,6 +38,12 @@ MainWidget::~MainWidget()
 	destroyAudio();
 
 	delete playButton;
+	delete stopButton;
+
+	delete keyboardWidget;
+	delete spectrumWidget;
+	delete waveformWidget;
+	delete waveformScrollbar;
 }
 
 void MainWidget::loadMusic()
@@ -82,10 +94,12 @@ void MainWidget::playMusic()
 	{
 		if(!audio->isPlaying())
 		{
+			playButton->setIcon(QIcon(":/data/icons/pause.png"));
 			audio->play();
 		}
 		else
 		{
+			playButton->setIcon(QIcon(":/data/icons/play-button.png"));
 			audio->pause();
 		}
 	}
@@ -95,8 +109,58 @@ void MainWidget::stopMusic()
 {
 	if(audio != nullptr)
 	{
+		playButton->setIcon(QIcon(":/data/icons/play-button.png"));
 		audio->reset();
 	}
+}
+
+void MainWidget::createButtons()
+{
+	playButton = new QPushButton(QIcon(":/data/icons/play-button.png"), "", this);
+	connect(playButton, SIGNAL(released()),
+	        this, SLOT(playMusic()));
+	playButton->setFixedSize(QSize(32, 32));
+
+	stopButton = new QPushButton(QIcon(":/data/icons/stop.png"), "", this);
+	connect(stopButton, SIGNAL(released()),
+	        this, SLOT(stopMusic()));
+	stopButton->setFixedSize(QSize(32, 32));
+}
+
+void MainWidget::createLayout()
+{
+	mainLayout.setSpacing(1);
+	controlsLayout.setSpacing(1);
+
+	controlsLayout.addWidget(playButton);
+	controlsLayout.addWidget(stopButton);
+	controlsLayout.addStretch(32);
+
+	mainLayout.addLayout(&controlsLayout);
+	mainLayout.addWidget(waveformScrollbar);
+	mainLayout.addWidget(waveformWidget);
+	mainLayout.addWidget(keyboardWidget);
+	mainLayout.addWidget(spectrumWidget);
+
+	setLayout(&mainLayout);
+}
+
+void MainWidget::createWidgets()
+{
+	keyboardWidget = new KeyboardWidget(parentApp, this);
+	keyboardWidget->setMinimumSize(100, 100);
+	keyboardWidget->setStyleSheet("background-color:red;");
+
+	spectrumWidget = new SpectrumWidget(parentApp, this);
+	spectrumWidget->setMinimumSize(100, 100);
+	spectrumWidget->setStyleSheet("background-color:black;");
+
+	waveformWidget = new WaveformWidget(parentApp, this);
+	waveformWidget->setMinimumSize(100, 100);
+	waveformWidget->setStyleSheet("background-color:blue;");
+
+	waveformScrollbar = new ScrollBar(Qt::Orientation::Horizontal,
+	                                  waveformWidget);
 }
 
 void MainWidget::initAudio()

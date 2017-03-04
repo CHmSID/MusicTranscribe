@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/data">
+        <file>icons/play-button.png</file>
+        <file>icons/stop.png</file>
+        <file>icons/pause.png</file>
+        <file>icons/pause.svg</file>
+        <file>icons/main.png</file>
+        <file>shaders/keyboardkey.vert</file>
+        <file>shaders/keyboardkey.frag</file>
+    </qresource>
+</RCC>

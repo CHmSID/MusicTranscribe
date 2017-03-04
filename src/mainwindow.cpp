@@ -9,6 +9,7 @@ MainWindow::MainWindow(QApplication *parent)
     :parent(parent)
 {
 	setWindowTitle("4th Year Project");
+	setWindowIcon(QIcon(":/data/icons/main.png"));
 	mainWidget = new MainWidget(parent, this);
 	setCentralWidget(mainWidget);
 

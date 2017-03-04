@@ -8,3 +8,8 @@
 
 # Ignore everything in the build directory.
 build/
+
+# my own files
+.directory
+src/FinalYearProject.pro.user
+src/icons/credit

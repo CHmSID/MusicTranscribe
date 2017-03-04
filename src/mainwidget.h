@@ -7,6 +7,8 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QTimer>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
 
 #include <string>
 
@@ -14,6 +16,11 @@ using std::string;
 
 class MainWindow;
 class Audio;
+
+class KeyboardWidget;
+class SpectrumWidget;
+class WaveformWidget;
+class ScrollBar;
 
 class MainWidget : public QWidget
 {
@@ -25,22 +32,38 @@ public:
 signals:
 
 private:
-	QApplication* parentApp;
-	MainWindow* parentWin;
+	QApplication* parentApp = nullptr;
+	MainWindow* parentWin = nullptr;
 
-	Audio* audio = nullptr;
 	QTimer* logicTimer = nullptr;
 
 	// Audio
+	Audio*      audio = nullptr;
 	ALCcontext* alContext = nullptr;
-	ALCdevice* alDevice = nullptr;
+	ALCdevice*  alDevice = nullptr;
 
 	// GUI
 	QPushButton* playButton = nullptr;
+	QPushButton* stopButton = nullptr;
 
+	QVBoxLayout mainLayout;
+	QHBoxLayout controlsLayout;
+
+	// Widgets
+	KeyboardWidget* keyboardWidget = nullptr;
+	SpectrumWidget* spectrumWidget = nullptr;
+	WaveformWidget* waveformWidget = nullptr;
+	ScrollBar*      waveformScrollbar = nullptr;
+
+	// Audio
 	void initAudio();
 	void checkForErrors(string prefix);
 	void destroyAudio();
+
+	// GUI
+	void createLayout();
+	void createButtons();
+	void createWidgets();
 
 public slots:
 

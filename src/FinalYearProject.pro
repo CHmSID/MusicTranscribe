@@ -27,14 +27,32 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     fft_test.cpp \
     audio.cpp \
-    mainwidget.cpp
+    mainwidget.cpp \
+    keyboardwidget.cpp \
+    waveformwidget.cpp \
+    spectrumwidget.cpp \
+    scrollbar.cpp
 
 HEADERS  += mainwindow.h \
     fft_test.h \
     audio.h \
-    mainwidget.h
+    mainwidget.h \
+    keyboardwidget.h \
+    waveformwidget.h \
+    spectrumwidget.h \
+    scrollbar.h
 
 LIBS += -lopenal -lpthread\
         -lmpg123
 
 QMAKE_CXXFLAGS += -std=gnu++11 -d
+
+FORMS += \
+    mainwindow.ui
+
+RESOURCES += \
+    resources.qrc
+
+DISTFILES += \
+    shaders/keyboardkey.vert \
+    shaders/keyboardkey.frag
