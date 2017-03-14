@@ -1,4 +1,6 @@
 # Sound Analysis using Fourier Transform
+Thursday February 9th
+
 My application will make use of an algorithm called Fourier Transform, and more specifically, Short-Time Fast Fourier Transform, in order to convert short pieces of audio from time domain into frequency domain.
 
 ## The plan for frequency analysis
@@ -19,4 +21,17 @@ The application must slow the music down, without loosing the pitch information 
 
 Even though it's 'fast', FFT is still very slow and I'm not sure I will be able to perform both frequency analysis and music slowdown at once. I'm considering providing and option to pre-compute a small piece of audio (around 10 seconds).
 
-I will write about Equalizing in the next blog.
+# Rendering the waveform in OpenGL
+Tuesday March 14th
+
+I am using modern OpenGL (Core 3.3) for all my rendering needs.
+
+A waveform is very useful in audio analysis. It's multi-purpose because it can act as a seek bar like in normal audio players, as well as showing the user peaks of audio, which help in determining the structure of the song (8 drum kicks per bar, for example).
+A waveform consists of stems, where each stem represents the average amplitude of a group of audio samples. A naive way would be to draw each stem as a vertical line. This would result in thousands of draw calls each frame for an average-sized music file.
+Each stem is a line. Each line consists of 2 vertices (points). That's potentially a million vertices that need to be transfered from CPU to the GPU.How to decrease the number of draw calls in this case? I could render to texture (image).
+
+I could draw each stem on an in-memory texture, then plaster that texture on a single surface (rectangle). This way I only have to draw each stem once, as opposed to drawing them on each frame. Additional bonus points for reducing the number of vertices from a million to 6 (a surface is made of 2 triangles).
+But this method will never work, or maybe it will, in a far away future. This is because unless the music is really short, the number of stems will far exceed the texture size on any modern graphics card (nowadays usually 4096 pixels).
+That's only 4096 stems, if we average 750 samples per stem, that comes out to 3072000 samples. That's only 35 seconds of a stereo audio sampled at 44.1KHz (standard for digital audio)!
+
+Compromise! Divide the texture into smaller "chunks" of, let's say 512 pixels, and render them together side by side. That comes to rendering 6 surfaces on the widest of screens at the same time, using only 36 vertices. Still better than a million.
