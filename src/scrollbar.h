@@ -13,6 +13,7 @@ public:
 
 public slots:
 	void addValue(int x);
+	void subValue(int x);
 };
 
 #endif // SCROLLBAR_H

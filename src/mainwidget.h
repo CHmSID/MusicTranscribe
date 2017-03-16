@@ -48,6 +48,9 @@ private:
 
 	QVBoxLayout mainLayout;
 	QHBoxLayout controlsLayout;
+	QVBoxLayout keyboardLayout;
+
+	bool followMusicMarker = true;
 
 	// Widgets
 	KeyboardWidget* keyboardWidget = nullptr;
@@ -73,6 +76,14 @@ private slots:
 	void logic();
 	void playMusic();
 	void stopMusic();
+
+	void turnOffMusicFollowing();
+
+protected slots:
+	void setFollowingMusicMarker(bool set);
+
+protected:
+	void resizeEvent(QResizeEvent *);
 };
 
 #endif // MAINWIDGET_H

@@ -32,6 +32,51 @@ bool Audio::isPlaying()
 	return playing;
 }
 
+unsigned long Audio::getCurrentPlayingIndex() const
+{
+	return currentProgressIndex;
+}
+
+unsigned long Audio::getDataSize() const
+{
+	return totalPcmData.size();
+}
+
+char Audio::getSample(unsigned long index)
+{
+	if(index >= totalPcmData.size())
+		return totalPcmData[totalPcmData.size() - 1];
+
+	return totalPcmData[index];
+}
+
+// Returns a value between 0 and 1
+double Audio::getProgress()
+{
+	if(currentProgressIndex == 0)
+		return 0;
+
+	if(currentProgressIndex >= totalPcmData.size() - size * 5)
+		return 1;
+
+	double progress = (double)currentProgressIndex / totalPcmData.size();
+
+	if(progress > 1)
+		progress = 1;
+
+	return progress;
+}
+
+int Audio::getTotalTime() const
+{
+	return info.dataSize / info.byteRate;
+}
+
+int Audio::getCurrentTime()
+{
+	return getTotalTime() * getProgress();
+}
+
 void Audio::setup()
 {
 	alGetError();

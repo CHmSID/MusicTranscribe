@@ -10,3 +10,8 @@ void ScrollBar::addValue(int x)
 {
 	setValue(value() + x);
 }
+
+void ScrollBar::subValue(int x)
+{
+	setValue(value() - x);
+}

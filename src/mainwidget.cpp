@@ -26,6 +26,18 @@ MainWidget::MainWidget(QApplication* parentApp, MainWindow* parentWin)
 	createLayout();
 
 	initAudio();
+
+	// When the user uses scrollbar, move the waveform up/down
+	connect(waveformScrollbar, SIGNAL(valueChanged(int)),
+	        waveformWidget, SLOT(setPosition(int)));
+
+	// When the waveform moves (due to following a marker), update the scrollbar
+	connect(waveformWidget, SIGNAL(positionChanged(int)),
+	        waveformScrollbar, SLOT(subValue(int)));
+
+	// When user presses on the scrollbar, turn off following the marker
+	connect(waveformScrollbar, SIGNAL(sliderPressed()),
+	        this, SLOT(turnOffMusicFollowing()));
 }
 
 MainWidget::~MainWidget()
@@ -44,6 +56,12 @@ MainWidget::~MainWidget()
 	delete spectrumWidget;
 	delete waveformWidget;
 	delete waveformScrollbar;
+}
+
+void MainWidget::resizeEvent(QResizeEvent *)
+{
+	waveformScrollbar->setMaximum(waveformWidget->getSize() * 100);
+	waveformScrollbar->setMinimum(0);
 }
 
 void MainWidget::loadMusic()
@@ -74,6 +92,25 @@ void MainWidget::loadMusic()
 	if(audio == nullptr){
 
 		qDebug() << "Could not load audio";
+	}
+	else
+	{
+		// Set the window title to the music file name
+		int i = fileName.lastIndexOf("/", -1) + 1;
+		parentWin->setWindowTitle(fileName.right(fileName.length() - i));
+
+		/*
+		 * The following code resets the waveform and
+		 * regenerates the visual data.
+		 * The properties of the scrollbar are also changed
+		 * according to the length of the music
+		 */
+		waveformWidget->clearChunks();
+		waveformWidget->clearMarkers();
+		waveformWidget->generateData(audio);
+		waveformScrollbar->setMaximum(waveformWidget->getSize() * 100);
+		waveformScrollbar->setMinimum(0);
+		waveformScrollbar->setValue(0);
 	}
 }
 
@@ -131,16 +168,19 @@ void MainWidget::createLayout()
 {
 	mainLayout.setSpacing(1);
 	controlsLayout.setSpacing(1);
+	keyboardLayout.setSpacing(1);
 
 	controlsLayout.addWidget(playButton);
 	controlsLayout.addWidget(stopButton);
 	controlsLayout.addStretch(32);
 
+	keyboardLayout.addWidget(keyboardWidget);
+
 	mainLayout.addLayout(&controlsLayout);
 	mainLayout.addWidget(waveformScrollbar);
 	mainLayout.addWidget(waveformWidget);
-	mainLayout.addWidget(keyboardWidget);
 	mainLayout.addWidget(spectrumWidget);
+	mainLayout.addLayout(&keyboardLayout);
 
 	setLayout(&mainLayout);
 }
@@ -149,18 +189,30 @@ void MainWidget::createWidgets()
 {
 	keyboardWidget = new KeyboardWidget(parentApp, this);
 	keyboardWidget->setMinimumSize(100, 100);
+	keyboardWidget->setMaximumHeight(100);
 	keyboardWidget->setStyleSheet("background-color:red;");
 
 	spectrumWidget = new SpectrumWidget(parentApp, this);
 	spectrumWidget->setMinimumSize(100, 100);
 	spectrumWidget->setStyleSheet("background-color:black;");
 
-	waveformWidget = new WaveformWidget(parentApp, this);
-	waveformWidget->setMinimumSize(100, 100);
-	waveformWidget->setStyleSheet("background-color:blue;");
-
 	waveformScrollbar = new ScrollBar(Qt::Orientation::Horizontal,
 	                                  waveformWidget);
+
+	waveformWidget = new WaveformWidget(parentApp, this, waveformScrollbar);
+	waveformWidget->setMinimumSize(100, 100);
+	waveformWidget->setMaximumHeight(100);
+	waveformWidget->setStyleSheet("background-color:blue;");
+}
+
+void MainWidget::turnOffMusicFollowing()
+{
+	waveformWidget->toggleFollowMarker(false);
+}
+
+void MainWidget::setFollowingMusicMarker(bool set)
+{
+	followMusicMarker = set;
 }
 
 void MainWidget::initAudio()

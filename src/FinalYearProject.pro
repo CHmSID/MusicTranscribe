@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     keyboardwidget.cpp \
     waveformwidget.cpp \
     spectrumwidget.cpp \
-    scrollbar.cpp
+    scrollbar.cpp \
+    util.cpp
 
 HEADERS  += mainwindow.h \
     fft_test.h \
@@ -40,7 +41,8 @@ HEADERS  += mainwindow.h \
     keyboardwidget.h \
     waveformwidget.h \
     spectrumwidget.h \
-    scrollbar.h
+    scrollbar.h \
+    util.h
 
 LIBS += -lopenal -lpthread\
         -lmpg123
@@ -55,4 +57,10 @@ RESOURCES += \
 
 DISTFILES += \
     shaders/keyboardkey.vert \
-    shaders/keyboardkey.frag
+    shaders/keyboardkey.frag \
+    shaders/waveform.frag \
+    shaders/waveform.vert \
+    shaders/chunk.frag \
+    shaders/chunk.vert \
+    shaders/marker.frag \
+    shaders/marker.vert

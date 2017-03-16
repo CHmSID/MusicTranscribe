@@ -30,7 +30,7 @@ KeyboardWidget::~KeyboardWidget()
 void KeyboardWidget::initializeGL()
 {
 	initializeOpenGLFunctions();
-	glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
 	logicTimer = new QTimer();
 	connect(logicTimer, SIGNAL(timeout()),

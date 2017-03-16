@@ -47,6 +47,13 @@ public:
 	void reset();
 	void seek(int p);
 
+	char getSample(unsigned long index);
+	double getProgress();
+	int getTotalTime() const;   // In seconds
+	int getCurrentTime(); // In seconds
+	unsigned long getCurrentPlayingIndex() const;
+	unsigned long getDataSize() const;
+
 	bool isPlaying();
 
 private:

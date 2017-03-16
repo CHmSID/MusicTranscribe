@@ -7,5 +7,11 @@
         <file>icons/main.png</file>
         <file>shaders/keyboardkey.vert</file>
         <file>shaders/keyboardkey.frag</file>
+        <file>shaders/marker.frag</file>
+        <file>shaders/marker.vert</file>
+        <file>shaders/waveform.frag</file>
+        <file>shaders/waveform.vert</file>
+        <file>shaders/chunk.vert</file>
+        <file>shaders/chunk.frag</file>
     </qresource>
 </RCC>
