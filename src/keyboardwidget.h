@@ -5,6 +5,7 @@
 #include <QOpenGLWidget>
 #include <QVector3D>
 #include <QVector4D>
+#include <QMatrix4x4>
 
 #include <QOpenGLFunctions>
 #include <QOpenGLShaderProgram>
@@ -25,6 +26,14 @@ public:
 	KeyboardWidget(QApplication* parentApp = 0, MainWidget* parentWid = 0);
 	~KeyboardWidget();
 
+	int getWidth() const; //Total width of all keys in pixels
+
+	int getKeyPosition(int key) const;
+	int getKeyWidth(int key) const;
+	bool isKeyWhite(int key) const;
+
+	QMatrix4x4 getModelMatrix() const;
+
 private:
 	QTimer* logicTimer;
 
@@ -36,6 +45,8 @@ private:
 
 	bool dirtyMatrix = false;
 
+	int totalWidth = 0;
+
 	class Key
 	{
 	public:
@@ -43,6 +54,9 @@ private:
 		~Key();
 
 		void render();
+
+		int getX();
+		int getWidth();
 		bool isWhite() const;
 
 		static void initShaders();

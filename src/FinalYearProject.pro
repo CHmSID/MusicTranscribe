@@ -63,4 +63,6 @@ DISTFILES += \
     shaders/chunk.frag \
     shaders/chunk.vert \
     shaders/marker.frag \
-    shaders/marker.vert
+    shaders/marker.vert \
+    shaders/spectrum.frag \
+    shaders/spectrum.vert

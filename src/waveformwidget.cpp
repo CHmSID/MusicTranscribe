@@ -49,7 +49,7 @@ void WaveformWidget::initializeGL()
 	logicTimer->start(33.3f);
 
 	initializeOpenGLFunctions();
-	glClearColor(41 / (float)255, 49 / (float)255, 58 / (float)255, 1.0f);
+	glClearColor(67 / (float)255, 64 / (float)255, 60 / (float)255, 1.0f);
 
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_SCISSOR_TEST);
@@ -337,22 +337,22 @@ void WaveformWidget::generateData(Audio *audio)
 			if(audio->info.numChannels == 1){
 
 				pushVertex(v, QVector2D(i + 1, 50 - data[dataIndex]),
-				           QVector3D(152 / (float)255, 169 / (float)255, 216 / (float)255));
+				           QVector3D(252 / (float)255, 163 / (float)255, 38 / (float)255));
 				pushVertex(v, QVector2D(i + 1, 50 + data[dataIndex]),
-				           QVector3D(152 / (float)255, 169 / (float)255, 216 / (float)255));
+				           QVector3D(252 / (float)255, 163 / (float)255, 38 / (float)255));
 				dataIndex++;
 			}
 			else if(audio->info.numChannels == 2){
 
 				pushVertex(v, QVector2D(i + 1, 50),
-				           QVector3D(132 / (float)255, 156 / (float)255, 216 / (float)255));
+				           QVector3D(252 / (float)255, 109 / (float)255, 38 / (float)255));
 				pushVertex(v, QVector2D(i + 1, 50 - data[dataIndex + 1]),
-				           QVector3D(132 / (float)255, 156 / (float)255, 216 / (float)255));
+				           QVector3D(252 / (float)255, 109 / (float)255, 38 / (float)255));
 
 				pushVertex(v, QVector2D(i + 1, 50 + data[dataIndex]),
-				           QVector3D(152 / (float)255, 169 / (float)255, 216 / (float)255));
+				           QVector3D(252 / (float)255, 163 / (float)255, 38 / (float)255));
 				pushVertex(v, QVector2D(i + 1, 50),
-				           QVector3D(152 / (float)255, 169 / (float)255, 216 / (float)255));
+				           QVector3D(252 / (float)255, 163 / (float)255, 38 / (float)255));
 				dataIndex += 2;
 			}
 		}

@@ -1,6 +1,5 @@
 #include "keyboardwidget.h"
 
-#include <QOpenGLFunctions>
 #include <QTimer>
 
 #include <vector>
@@ -89,6 +88,8 @@ void KeyboardWidget::initializeGL()
 		else
 			x += width / 2;
 	}
+
+	totalWidth = x;
 }
 
 void KeyboardWidget::paintGL()
@@ -112,8 +113,41 @@ void KeyboardWidget::paintGL()
 void KeyboardWidget::resizeGL(int width, int height)
 {
 	projectionMatrix.setToIdentity();
-	projectionMatrix.ortho(0, width, 0, height, 1, -1);
+
+	int newWidth = width;
+
+	if(width > getWidth())
+		newWidth = getWidth();
+
+	qDebug() << newWidth;
+
+	projectionMatrix.ortho(0, newWidth, 0, height, 1, -1);
 	dirtyMatrix = true;
+}
+
+int KeyboardWidget::getWidth() const
+{
+	return totalWidth;
+}
+
+int KeyboardWidget::getKeyPosition(int key) const
+{
+	return keys[key]->getX();
+}
+
+int KeyboardWidget::getKeyWidth(int key) const
+{
+	return keys[key]->getWidth();
+}
+
+bool KeyboardWidget::isKeyWhite(int key) const
+{
+	return keys[key]->isWhite();
+}
+
+QMatrix4x4 KeyboardWidget::getModelMatrix() const
+{
+	return modelMatrix;
 }
 
 void KeyboardWidget::logic()
@@ -176,6 +210,16 @@ KeyboardWidget::Key::~Key()
 	parent->makeCurrent();
 	vao.destroy();
 	vbo.destroy();
+}
+
+int KeyboardWidget::Key::getX()
+{
+	return data[0];
+}
+
+int KeyboardWidget::Key::getWidth()
+{
+	return data[2] - data[0];
 }
 
 bool KeyboardWidget::Key::isWhite() const

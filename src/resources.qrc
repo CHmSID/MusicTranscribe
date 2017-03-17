@@ -13,5 +13,7 @@
         <file>shaders/waveform.vert</file>
         <file>shaders/chunk.vert</file>
         <file>shaders/chunk.frag</file>
+        <file>shaders/spectrum.frag</file>
+        <file>shaders/spectrum.vert</file>
     </qresource>
 </RCC>

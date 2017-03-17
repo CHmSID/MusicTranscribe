@@ -111,6 +111,9 @@ void MainWidget::loadMusic()
 		waveformScrollbar->setMaximum(waveformWidget->getSize() * 100);
 		waveformScrollbar->setMinimum(0);
 		waveformScrollbar->setValue(0);
+
+		spectrumWidget->connetToAudio(audio);
+		spectrumWidget->calculateSpectrum(2048);
 	}
 }
 
@@ -121,6 +124,7 @@ void MainWidget::logic()
 		if(audio->isPlaying())
 		{
 			audio->update();
+			spectrumWidget->calculateSpectrum(2048);
 		}
 	}
 }
@@ -190,11 +194,9 @@ void MainWidget::createWidgets()
 	keyboardWidget = new KeyboardWidget(parentApp, this);
 	keyboardWidget->setMinimumSize(100, 100);
 	keyboardWidget->setMaximumHeight(100);
-	keyboardWidget->setStyleSheet("background-color:red;");
 
-	spectrumWidget = new SpectrumWidget(parentApp, this);
+	spectrumWidget = new SpectrumWidget(parentApp, keyboardWidget);
 	spectrumWidget->setMinimumSize(100, 100);
-	spectrumWidget->setStyleSheet("background-color:black;");
 
 	waveformScrollbar = new ScrollBar(Qt::Orientation::Horizontal,
 	                                  waveformWidget);
@@ -202,7 +204,6 @@ void MainWidget::createWidgets()
 	waveformWidget = new WaveformWidget(parentApp, this, waveformScrollbar);
 	waveformWidget->setMinimumSize(100, 100);
 	waveformWidget->setMaximumHeight(100);
-	waveformWidget->setStyleSheet("background-color:blue;");
 }
 
 void MainWidget::turnOffMusicFollowing()
