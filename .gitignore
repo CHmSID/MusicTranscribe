@@ -7,7 +7,7 @@
 *.o
 
 # Ignore everything in the build directory.
-build/
+build*
 
 # my own files
 .directory
