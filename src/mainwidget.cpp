@@ -21,8 +21,8 @@ MainWidget::MainWidget(QApplication* parentApp, MainWindow* parentWin)
 	        this, SLOT(logic()));
 	logicTimer->start(32);
 
-	createButtons();
 	createWidgets();
+    createButtons();
 	createLayout();
 
 	initAudio();
@@ -161,11 +161,23 @@ void MainWidget::createButtons()
 	connect(playButton, SIGNAL(released()),
 	        this, SLOT(playMusic()));
 	playButton->setFixedSize(QSize(32, 32));
+    playButton->setToolTip("Play/Pause");
 
 	stopButton = new QPushButton(QIcon(":/data/icons/stop.png"), "", this);
 	connect(stopButton, SIGNAL(released()),
 	        this, SLOT(stopMusic()));
 	stopButton->setFixedSize(QSize(32, 32));
+    stopButton->setToolTip("Stop");
+
+    followButton = new QPushButton(QIcon(":/data/icons/follow.png"), "", this);
+    connect(followButton, SIGNAL(toggled(bool)),
+            waveformWidget, SLOT(toggleFollowMarker(bool)));
+    connect(waveformWidget, SIGNAL(areaScrolled(bool)),
+            followButton, SLOT(setChecked(bool)));
+    followButton->setFixedSize(QSize(32, 32));
+    followButton->setCheckable(true);
+    followButton->setChecked(true);
+    followButton->setToolTip("Follow the marker");
 }
 
 void MainWidget::createLayout()
@@ -176,6 +188,7 @@ void MainWidget::createLayout()
 
 	controlsLayout.addWidget(playButton);
 	controlsLayout.addWidget(stopButton);
+    controlsLayout.addWidget(followButton);
 	controlsLayout.addStretch(32);
 
 	keyboardLayout.addWidget(keyboardWidget);

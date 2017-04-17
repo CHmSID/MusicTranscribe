@@ -45,6 +45,7 @@ private:
 	// GUI
 	QPushButton* playButton = nullptr;
 	QPushButton* stopButton = nullptr;
+    QPushButton* followButton = nullptr;
 
 	QVBoxLayout mainLayout;
 	QHBoxLayout controlsLayout;

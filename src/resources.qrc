@@ -15,5 +15,6 @@
         <file>shaders/chunk.frag</file>
         <file>shaders/spectrum.frag</file>
         <file>shaders/spectrum.vert</file>
+        <file>icons/follow.png</file>
     </qresource>
 </RCC>
