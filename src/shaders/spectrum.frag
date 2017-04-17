@@ -5,8 +5,8 @@ out vec4 fColor;
 
 void main(){
 
-	vec3 colorWhite = vec3(252/255f, 109/255f, 38/255f);
-	vec3 colorBlack = vec3(226/255f, 67/255f, 41/255f);
+	vec3 colorWhite = vec3(252.0/255.0, 109.0/255.0, 38.0/255.0);
+	vec3 colorBlack = vec3(226.0/255.0, 67.0/255.0, 41.0/255.0);
 
 	if(isWhite == 1)
 		fColor = vec4(colorWhite, 1);
