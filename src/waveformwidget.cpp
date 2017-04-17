@@ -183,6 +183,28 @@ void WaveformWidget::setPosition(int p)
 	xCurrentPosition = p / 100.0f;
 }
 
+void WaveformWidget::wheelEvent(QWheelEvent *event)
+{
+    toggleFollowMarker(false);
+    emit positionChanged(event->delta() * 100);
+    emit areaScrolled(false);
+}
+
+void WaveformWidget::mousePressEvent(QMouseEvent *event)
+{
+    mousePressX = event->x();
+}
+
+void WaveformWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+    mouseReleaseX = event->x() + xCurrentPosition;
+
+    if(audio != nullptr)
+    {
+        audio->seek(mouseReleaseX);
+    }
+}
+
 void WaveformWidget::updateMatrices()
 {
 	if(Chunk::shadersInitialised){

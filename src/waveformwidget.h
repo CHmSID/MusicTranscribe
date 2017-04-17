@@ -6,6 +6,7 @@
 #include <QVector2D>
 #include <QMatrix4x4>
 #include <QtGlobal>
+#include <QWheelEvent>
 
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
@@ -130,6 +131,10 @@ protected:
 	void paintGL();
 	void initializeGL();
 	void resizeGL(int width, int height);
+
+    void wheelEvent(QWheelEvent* event);
+    void mousePressEvent(QMouseEvent* event);
+    void mouseReleaseEvent(QMouseEvent* event);
 
 	QMatrix4x4 projectionMatrix;
 	QMatrix4x4 modelMatrix;
