@@ -119,15 +119,13 @@ void KeyboardWidget::resizeGL(int width, int height)
 	if(width > getWidth())
 		newWidth = getWidth();
 
-	qDebug() << newWidth;
-
 	projectionMatrix.ortho(0, newWidth, 0, height, 1, -1);
 	dirtyMatrix = true;
 }
 
 int KeyboardWidget::getWidth() const
 {
-	return totalWidth;
+    return 98 * 14; //98 keys, 14 pixels each (before scaling)
 }
 
 int KeyboardWidget::getKeyPosition(int key) const
@@ -170,7 +168,6 @@ void KeyboardWidget::Key::initShaders()
 
 		keyShader->link();
 		keyShader->bind();
-		qDebug() << "Linked";
 		keyShaderInitialised = true;
 	}
 }
