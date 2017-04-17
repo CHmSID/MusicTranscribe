@@ -1,6 +1,8 @@
 #include "keyboardwidget.h"
 
 #include <QTimer>
+#include <QWheelEvent>
+#include <QDebug>
 
 #include <vector>
 
@@ -119,8 +121,32 @@ void KeyboardWidget::resizeGL(int width, int height)
 	if(width > getWidth())
 		newWidth = getWidth();
 
+    clampToWidget();
+
 	projectionMatrix.ortho(0, newWidth, 0, height, 1, -1);
 	dirtyMatrix = true;
+}
+
+void KeyboardWidget::wheelEvent(QWheelEvent *event)
+{
+    emit positionChanged(-event->delta() / 3);
+    xCurrentPosition -= event->delta() / 3;
+
+    clampToWidget();
+}
+
+void KeyboardWidget::clampToWidget()
+{
+    if(xCurrentPosition >= getWidth() - width())
+        xCurrentPosition = getWidth() - width();
+
+    if(xCurrentPosition <= 0)
+        xCurrentPosition = 0;
+}
+
+void KeyboardWidget::setPosition(int w)
+{
+    xCurrentPosition = w;
 }
 
 int KeyboardWidget::getWidth() const
@@ -150,7 +176,11 @@ QMatrix4x4 KeyboardWidget::getModelMatrix() const
 
 void KeyboardWidget::logic()
 {
-	update();
+    modelMatrix.setToIdentity();
+    modelMatrix.translate(QVector3D(-xCurrentPosition, 0, 0));
+    dirtyMatrix = true;
+    update();
+    parentApp->processEvents();
 }
 
 /*************************************

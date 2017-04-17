@@ -62,9 +62,11 @@ void SpectrumWidget::resizeGL(int width, int height)
 {
 	projectionMatrix.setToIdentity();
 
-	int newWidth = width;
+    int newWidth = width;
     if(width > keyboard->getWidth())
+    {
         newWidth = keyboard->getWidth();
+    }
 
 	projectionMatrix.ortho(0, newWidth, 0, height, 1, -1);
 	dirtyMatrix = true;

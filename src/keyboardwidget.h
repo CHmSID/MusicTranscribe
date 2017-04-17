@@ -45,7 +45,10 @@ private:
 
 	bool dirtyMatrix = false;
 
+    float xCurrentPosition = 0;
 	int totalWidth = 0;
+
+    void clampToWidget();
 
 	class Key
 	{
@@ -83,11 +86,17 @@ signals:
 
 public slots:
 	void logic();
+    void setPosition(int);
+
+signals:
+    void positionChanged(int w);
 
 protected:
 	void initializeGL();
 	void paintGL();
 	void resizeGL(int width, int height);
+
+    void wheelEvent(QWheelEvent* event);
 };
 
 #endif // KEYBOARDWIDGET_H

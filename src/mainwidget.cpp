@@ -35,7 +35,7 @@ MainWidget::MainWidget(QApplication* parentApp, MainWindow* parentWin)
 	connect(waveformWidget, SIGNAL(positionChanged(int)),
 	        waveformScrollbar, SLOT(subValue(int)));
 
-	// When user presses on the scrollbar, turn off following the marker
+    // When the user presses on the scrollbar, turn off following the marker
 	connect(waveformScrollbar, SIGNAL(sliderPressed()),
 	        this, SLOT(turnOffMusicFollowing()));
 }
