@@ -78,7 +78,7 @@ void SpectrumWidget::logic()
 	parentApp->processEvents();
 }
 
-void SpectrumWidget::connetToAudio(Audio* a)
+void SpectrumWidget::connectToAudio(Audio* a)
 {
 	audio = a;
 }

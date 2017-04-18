@@ -2,6 +2,7 @@
 
 #include <QApplication>
 #include <QFileDialog>
+#include <QDialog>
 #include <QSize>
 
 #include "mainwindow.h"
@@ -10,6 +11,7 @@
 #include "spectrumwidget.h"
 #include "waveformwidget.h"
 #include "scrollbar.h"
+#include "progressdialog.h"
 
 MainWidget::MainWidget(QApplication* parentApp, MainWindow* parentWin)
 {
@@ -87,7 +89,14 @@ void MainWidget::loadMusic()
 		audio = nullptr;
 	}
 
-	audio = new Audio(fileName.toStdString().c_str());
+    QProgressDialog* dialog = new QProgressDialog("text", "cancel", 0, 100, this);
+    dialog->show();
+    dialog->setMinimumDuration(3000);
+    dialog->setAutoReset(false);
+    dialog->setModal(true);
+    dialog->setAutoClose(false);
+
+    audio = new Audio(fileName.toStdString().c_str(), dialog);
 
 	if(audio == nullptr){
 
@@ -107,14 +116,16 @@ void MainWidget::loadMusic()
 		 */
 		waveformWidget->clearChunks();
 		waveformWidget->clearMarkers();
-		waveformWidget->generateData(audio);
+        waveformWidget->generateData(audio);
 		waveformScrollbar->setMaximum(waveformWidget->getSize() * 100);
 		waveformScrollbar->setMinimum(0);
 		waveformScrollbar->setValue(0);
 
-		spectrumWidget->connetToAudio(audio);
+        spectrumWidget->connectToAudio(audio);
 		spectrumWidget->calculateSpectrum(2048);
 	}
+
+    delete dialog;
 }
 
 void MainWidget::logic()

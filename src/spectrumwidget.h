@@ -29,7 +29,7 @@ public:
 
 public slots:
 	void calculateSpectrum(int size);
-	void connetToAudio(Audio* a);
+    void connectToAudio(Audio* a);
 
 private slots:
 	void logic();

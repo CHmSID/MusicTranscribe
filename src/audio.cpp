@@ -5,6 +5,8 @@
 #include <mpg123.h>
 
 #include <QDebug>
+#include <QProgressDialog>
+#include <QFileInfo>
 
 #include <fstream>
 #include <string>
@@ -14,10 +16,12 @@ using std::vector;
 using std::string;
 using std::ifstream;
 
-Audio::Audio(const char* filename)
+Audio::Audio(const char* filename, QProgressDialog* dialog)
 {
 	this->filename = (char*)filename;
+    this->dialog = dialog;
 	setup();
+    dialog->close();
 }
 
 Audio::~Audio()
@@ -253,10 +257,18 @@ void Audio::loadMP3()
 	info.sampleRate = (unsigned int)sample;
 	info.numChannels = (unsigned short)numCh;
 
+    QFileInfo file(QString::fromStdString(filename));
+
+    qint64 fileSize = file.size() - 4; // Minus the header
+
 	while(mpg123_read(decoder, (unsigned char*)array, bufferSize, (size_t*)&done) == MPG123_OK){
 
 		totalPcmData.insert(totalPcmData.end(), array, array + done);
 		info.dataSize += done;
+        dialog->setValue((float)info.dataSize / fileSize * 10);
+
+        if(dialog->wasCanceled())
+            break;
 	}
 
 	info.dataSize /= 2;

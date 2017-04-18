@@ -33,11 +33,15 @@ struct AudioInfo
 	unsigned short bitRate;
 };
 
+class QProgressDialog;
+
 class Audio
 {
 public:
-	Audio(const char* filename);
+    Audio(const char* filename, QProgressDialog* dialog);
 	~Audio();
+
+    QProgressDialog* dialog;
 
 	AudioInfo info;
 
@@ -85,9 +89,9 @@ private:
 	void setup();
 	void checkForErrors(const char* prefix);
 
-	void loadWAV();
-	void loadMP3();
-	void loadOGG();
+    void loadWAV();
+    void loadMP3();
+    void loadOGG();
 
 	bool containsSuffix(string name, string suffix);
 };
