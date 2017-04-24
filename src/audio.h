@@ -62,6 +62,7 @@ public:
 
 private:
 	char* filename;
+    ifstream file;
 
 	bool playing;
 	bool paused;
@@ -92,6 +93,11 @@ private:
     void loadWAV();
     void loadMP3();
     void loadOGG();
+
+    unsigned int readInt(ifstream& file);
+    short readShort(ifstream& file);
+    string readChar(ifstream& file, int n);
+    unsigned char readByte(ifstream& file);
 
 	bool containsSuffix(string name, string suffix);
 };

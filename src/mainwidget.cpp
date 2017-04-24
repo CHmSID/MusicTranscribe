@@ -11,7 +11,6 @@
 #include "spectrumwidget.h"
 #include "waveformwidget.h"
 #include "scrollbar.h"
-#include "progressdialog.h"
 
 MainWidget::MainWidget(QApplication* parentApp, MainWindow* parentWin)
 {

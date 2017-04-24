@@ -208,8 +208,8 @@ void Audio::seek(int p)
 
 	alSourceUnqueueBuffers(source, 5, &buffer[0]);
 
-	for(int i = 0; i < 5; i++){
-
+    for(int i = 0; i < 5; i++)
+    {
 		int tmpSize = size;
 
 		//if there is less than 'size' of the data left
@@ -225,6 +225,7 @@ void Audio::seek(int p)
 
 	alSourceQueueBuffers(source, 5, &buffer[0]);
 
+    qDebug() << wasPlaying;
 	if(wasPlaying)
 		play();
 	else
@@ -261,8 +262,8 @@ void Audio::loadMP3()
 
     qint64 fileSize = file.size() - 4; // Minus the header
 
-	while(mpg123_read(decoder, (unsigned char*)array, bufferSize, (size_t*)&done) == MPG123_OK){
-
+    while(mpg123_read(decoder, (unsigned char*)array, bufferSize, (size_t*)&done) == MPG123_OK)
+    {
 		totalPcmData.insert(totalPcmData.end(), array, array + done);
 		info.dataSize += done;
         dialog->setValue((float)info.dataSize / fileSize * 10);
@@ -290,12 +291,67 @@ bool Audio::containsSuffix(string name, string suffix)
 
 void Audio::loadOGG()
 {
+    int bufferSize = 32768; //32KB
+    totalPcmData.clear();
 
+    FILE* f;
+    f = fopen(filename, "rb");
+
+    vorbis_info* pInfo;
+    OggVorbis_File oggFile;
+
+    ov_open(f, &oggFile, nullptr, 0);
+
+    pInfo = ov_info(&oggFile, -1);
+
+    info.riffHeader = "OGG";
+    info.size = 0;
+    info.dataSize = 0;
+    info.numChannels = pInfo->channels;
+    info.sampleRate = pInfo->rate;
+    info.bitRate = 16;
+    info.byteRate = info.sampleRate * info.numChannels;
+
+    long bytes = 0;
+    int bitStream = 0;
+    char array[bufferSize];
+
+    do
+    {
+        bytes = ov_read(&oggFile, array, bufferSize, 0, 2, 1, &bitStream);
+        totalPcmData.insert(totalPcmData.end(), array, array + bytes);
+        info.dataSize += bytes;
+
+    } while(bytes > 0);
+
+    info.dataSize /= 2;
+    info.size = info.dataSize;
+
+    ov_clear(&oggFile);
 }
 
 void Audio::loadWAV()
 {
+    file.open(filename, std::ios::binary);
 
+    info.riffHeader = readChar(file, 4);
+    info.size = readInt(file);
+    info.waveHeader = readChar(file, 4);
+    info.fmtHeader = readChar(file, 4);
+    info.subChunkSize = readInt(file);
+    info.audioFormat = readShort(file);
+    info.numChannels = readShort(file);
+    info.sampleRate = readInt(file);
+    info.byteRate = readInt(file);
+    info.blockAlignment = readShort(file);
+    info.bitRate = readShort(file);
+    info.dataHeader = readChar(file, 4);
+    info.dataSize = readInt(file);
+
+    totalPcmData.resize(info.dataSize, 0);  //vector<char> totalPcmData;
+    file.read((char*)&totalPcmData[0], info.dataSize);
+
+    file.close();
 }
 
 void Audio::checkForErrors(const char* prefix)
@@ -327,4 +383,43 @@ void Audio::checkForErrors(const char* prefix)
 		qDebug() << "ERROR!in" << prefix << ":" << errCode.c_str();
 		error = alGetError();
 	}
+}
+
+unsigned int Audio::readInt(ifstream& file)
+{
+    int size = 4;
+    char buffer[size];
+    file.read(buffer, size);
+    unsigned int x = 0;
+    x |= buffer[3] << 24;
+    x |= (buffer[2] << 16) & 0x00FF0000;
+    x |= (buffer[1] << 8) & 0x0000FF00;
+    x |= buffer[0] & 0x000000FF;
+
+    return x;
+}
+
+short Audio::readShort(ifstream& file)
+{
+    int size = 2;
+    char buffer[size];
+    file.read(buffer, size);
+    short x = (buffer[1] << 8) | buffer[0];
+
+    return x;
+}
+
+string Audio::readChar(ifstream& file, int n)
+{
+    char buffer[n];
+    file.read(buffer, n);
+    buffer[n] = '\0';
+    return string(buffer);
+}
+
+unsigned char Audio::readByte(ifstream& file)
+{
+    unsigned char n[1];
+    file.read((char*)n, 1);
+    return (unsigned)n[0];
 }
