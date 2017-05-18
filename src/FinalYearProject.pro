@@ -46,7 +46,8 @@ HEADERS  += mainwindow.h \
 
 LIBS += -lopenal -lpthread\
         -lmpg123\
-        -lvorbis -lvorbisfile -logg
+        -lvorbis -lvorbisfile -logg\
+        -lrubberband
 
 QMAKE_CXXFLAGS += -std=gnu++11 -d
 

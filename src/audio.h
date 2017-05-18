@@ -2,6 +2,7 @@
 #define AUDIO_H
 
 #include <AL/al.h>
+#include <rubberband/RubberBandStretcher.h>
 
 #include <fstream>
 #include <string>
@@ -10,6 +11,9 @@
 using std::ifstream;
 using std::string;
 using std::vector;
+using namespace RubberBand;
+
+//class RubberBandStretcher;
 
 /* General information about the loaded audio.
  * Some of the fields are only used by WAV format
@@ -67,6 +71,8 @@ private:
 	bool playing;
 	bool paused;
 
+    RubberBandStretcher* ts = nullptr;
+
 	// OpenAL variables
 	ALuint buffer[5]; // The queue of buffers to be played
 	ALuint source;    // OpenAL sound source (where the sound comes from)
@@ -76,7 +82,7 @@ private:
 	ALenum state;
 
 	// Raw PCM data
-	vector<unsigned char> totalPcmData; // The whole song is kept in memory for
+    vector<char> totalPcmData; // The whole song is kept in memory for
 	                                    // fast access outside the currently
 	                                    // loaded buffers
 	unsigned long totalPcmDataIndex = 0; // Current position in the song
@@ -93,6 +99,10 @@ private:
     void loadWAV();
     void loadMP3();
     void loadOGG();
+
+    vector<char> timeStretch(vector<char>& data);
+    vector<char> floatToCharVector(vector<float> input, int bitrate);
+    vector<float> charToFloatVector(vector<char> input, int bitrate);
 
     unsigned int readInt(ifstream& file);
     short readShort(ifstream& file);

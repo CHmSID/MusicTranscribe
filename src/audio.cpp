@@ -3,6 +3,7 @@
 #include <AL/al.h>
 #include <vorbis/vorbisfile.h>
 #include <mpg123.h>
+#include <rubberband/RubberBandStretcher.h>
 
 #include <QDebug>
 #include <QProgressDialog>
@@ -11,10 +12,12 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <stdio.h>
 
 using std::vector;
 using std::string;
 using std::ifstream;
+using namespace RubberBand;
 
 Audio::Audio(const char* filename, QProgressDialog* dialog)
 {
@@ -29,6 +32,8 @@ Audio::~Audio()
 	alSourceStop(source);
 	alDeleteSources(1, &source);
 	alDeleteBuffers(5, &buffer[0]);
+
+    delete ts;
 }
 
 bool Audio::isPlaying()
@@ -103,8 +108,10 @@ void Audio::setup()
 
 	if(info.numChannels == 1)
 	{
-		if(info.bitRate == 8)
+        if(info.bitRate == 8){
 			format = AL_FORMAT_MONO8;
+            qDebug() << "HERE";
+        }
 		else if (info.bitRate == 16)
 			format = AL_FORMAT_MONO16;
 		else
@@ -122,10 +129,103 @@ void Audio::setup()
 	else
 		qDebug() << "Wrong number of channels";
 
-	size = info.byteRate * 0.1f;
+//	size = info.byteRate * 0.1f;
+    size = 8192;
 	freq = info.sampleRate;
 
+    ts = new RubberBandStretcher(info.sampleRate, info.numChannels,
+                                 RubberBandStretcher::OptionProcessRealTime | RubberBandStretcher::OptionPitchHighConsistency,
+                                 2.0f, 1.0f);
+
 	reset();
+}
+
+vector<char> Audio::timeStretch(vector<char>& inData)
+{
+//    if(ratio == 1)
+//        return data;  // Do not waste time on processing for no reason
+
+    vector<float> data =  charToFloatVector(inData, info.bitRate);
+
+    int inFrames = data.size() / info.numChannels;
+    ts->setExpectedInputDuration(inFrames);
+
+    vector<float> output;
+
+    int ibs = 1024;
+    float *fbuf = new float[info.numChannels * ibs];
+    float **ibuf = new float *[info.numChannels];
+
+    for (size_t i = 0; i < info.numChannels; ++i)
+        ibuf[i] = new float[ibs];
+
+    int frame = 0;
+
+    while (frame < inFrames) {
+
+        int count = ibs;
+        int frameIdx = frame * info.numChannels;
+        fbuf = &data[frameIdx];
+
+        for (size_t c = 0; c < info.numChannels; ++c) {
+
+            for (int i = 0; i < count; ++i) {
+
+                float value = fbuf[i * info.numChannels + c];
+                ibuf[c][i] = value;
+            }
+        }
+
+        ts->process(ibuf, count, false);
+
+        int avail = ts->available();
+
+        if (avail > 0) {
+
+            float **obf = new float *[info.numChannels];
+
+            for (size_t i = 0; i < info.numChannels; ++i) {
+
+                obf[i] = new float[avail];
+            }
+
+            ts->retrieve(obf, avail);
+            float *fobf = new float[info.numChannels * avail];
+
+            for (size_t c = 0; c < info.numChannels; ++c) {
+
+                for (int i = 0; i < avail; ++i) {
+
+                    float value = obf[c][i];
+
+                    if (value > 1.f)
+                        value = 1.f;
+
+                    if (value < -1.f)
+                        value = -1.f;
+
+                    fobf[i * info.numChannels + c] = value;
+                }
+            }
+
+            for(int i = 0; i < info.numChannels * avail; ++i){
+                output.push_back(fobf[i]);
+            }
+
+            delete[] fobf;
+
+            for (size_t i = 0; i < info.numChannels; ++i) {
+
+                delete[] obf[i];
+            }
+
+            delete[] obf;
+        }
+
+        frame += ibs;
+    }
+
+    return floatToCharVector(output, info.bitRate);
 }
 
 void Audio::play()
@@ -166,9 +266,13 @@ void Audio::update()
 		if(totalPcmData.size() - trueSize < totalPcmDataIndex)
 			trueSize = totalPcmData.size() - totalPcmDataIndex;
 
+        vector<char> dataToProcess(totalPcmData.begin() + totalPcmDataIndex,
+                                   totalPcmData.begin() + totalPcmDataIndex + trueSize);
+        vector<char> processedData = timeStretch(dataToProcess);
+
 		alBufferData(buffer[bufferIndex],
-		             format, &totalPcmData[totalPcmDataIndex],
-		             trueSize * sizeof(char), freq);
+                     format, &processedData[0],
+                     processedData.size() * sizeof(char), freq);
 
 		totalPcmDataIndex += trueSize;
 
@@ -210,22 +314,25 @@ void Audio::seek(int p)
 
     for(int i = 0; i < 5; i++)
     {
-		int tmpSize = size;
+        int trueSize = size;
 
 		//if there is less than 'size' of the data left
-		if(totalPcmData.size() - tmpSize < totalPcmDataIndex)
-			tmpSize = totalPcmData.size() - totalPcmDataIndex;
+        if(totalPcmData.size() - trueSize < totalPcmDataIndex)
+            trueSize = totalPcmData.size() - totalPcmDataIndex;
+
+        vector<char> dataToProcess(totalPcmData.begin() + totalPcmDataIndex,
+                                   totalPcmData.begin() + totalPcmDataIndex + trueSize);
+        vector<char> processedData = timeStretch(dataToProcess);
 
 		alBufferData(buffer[i], format,
-		    &totalPcmData[totalPcmDataIndex],
-		    tmpSize * sizeof(char), freq);
+            &processedData[0],
+            processedData.size() * sizeof(char), freq);
 
-		totalPcmDataIndex += tmpSize;
+        totalPcmDataIndex += trueSize;
 	}
 
 	alSourceQueueBuffers(source, 5, &buffer[0]);
 
-    qDebug() << wasPlaying;
 	if(wasPlaying)
 		play();
 	else
@@ -422,4 +529,45 @@ unsigned char Audio::readByte(ifstream& file)
     unsigned char n[1];
     file.read((char*)n, 1);
     return (unsigned)n[0];
+}
+
+vector<char> Audio::floatToCharVector(vector<float> input, int bitrate)
+{
+    vector<char> data;
+
+    for(int i = 0; i < input.size(); ++i)
+    {
+        if(bitrate == 8)
+            data.push_back((char)((input[i] + 1) / 2 * 256.0f));
+        else
+        {
+            short d = (short)((input[i]) / 2 * 65536.0f);
+            char x1 = (d & 0xFF00) >> 8;
+            char x2 = d & 0x00FF;
+
+            data.push_back(x2);
+            data.push_back(x1);
+        }
+    }
+
+    return data;
+}
+
+vector<float> Audio::charToFloatVector(vector<char> input, int bitrate)
+{
+    vector<float> data;
+
+    for(int i = 0; i < input.size() / (bitrate / 8); ++i)
+    {
+        if(bitrate == 8){
+            data.push_back((unsigned char)input[i] / 255.0f * 2.0f - 1.0f);
+        }
+        else
+        {
+            short d = ((unsigned char)input[i * 2 + 1] << 8) | (unsigned char)input[i * 2];
+            data.push_back((float)d / 32768.0f);
+        }
+    }
+
+    return data;
 }
