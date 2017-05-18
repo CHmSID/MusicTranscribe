@@ -35,3 +35,22 @@ But this method will never work, or maybe it will, in a far away future. This is
 That's only 4096 stems, if we average 750 samples per stem, that comes out to 3072000 samples. That's only 35 seconds of a stereo audio sampled at 44.1KHz (standard for digital audio)!
 
 Compromise! Divide the texture into smaller "chunks" of, let's say 512 pixels, and render them together side by side. That comes to rendering 6 surfaces on the widest of screens at the same time, using only 36 vertices. Still better than a million.
+
+# Tone transposition
+Thursday May 18th
+
+Transposing tone is the polar opposite of stretching audio. That is, how to change the tone of the song to, for example, fit the key of an instrument we're transcribing for, but without changing the speed of the song? The answer is suprisingly simple once we have the time stretching implemented!
+Time and tone are directly proportional to each other and one can not change without other changing, when using naive methods. That means, if the speed doubles, the tone rises by an octave, ie: 12 tones. If we slow the music down to half its speed, the tonality lowers by 12 tones.
+I am hoping to exploit that relationship between tone and speed.
+
+If I stretch the song by a factor fo 2, it will be twice as long, but in the same key. If that stretched song is then sped up to twice its speed, the resulting length of the song will be its original length, but the song will be 12 tones higher! That's how you would transpose a song by 12 tones.
+Because the relationship is linear, I am able to use simple algebra to calculate the stretch factor and play speed to achieve a 1 tone transposition. Let's assume we're transcribing for a saxophone and do a simple example of transposing a song by 3 tones down:
+
+Let's do some maths!
+The speed of the song is determined by its sample rate, in other words, how many samples are being played per second. Usually this number is 44100 for normal audio files and 48000 for CDs. Lets assume ours is 44100 samples per second.
+This means if we played that song at a speed of 88200 samples per second, we'd be playing it twice as fast. 22050 would be twice as slow.
+
+1. First, we need to know the sample rate at which we should be playing the song. We want three tones up, so we need to add 3/12ths (12 tones in octave) to our original sample rate. This comes out to 47775 samples per second.
+2. By performing 47775/44100 we receive 1.083. This is our slowdown factor.
+
+That's all! We need to stretch our music to be 1.083 slower, and play it at a sample rate of 47775 to receive a song at its original speed but transposed 3 tones up!
