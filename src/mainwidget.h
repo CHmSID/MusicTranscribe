@@ -6,7 +6,9 @@
 #include <QApplication>
 #include <QWidget>
 #include <QPushButton>
+#include <QSlider>
 #include <QTimer>
+#include <QLabel>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 
@@ -46,6 +48,11 @@ private:
 	QPushButton* playButton = nullptr;
 	QPushButton* stopButton = nullptr;
     QPushButton* followButton = nullptr;
+    QSlider* speedSlider = nullptr;
+    QSlider* toneSlider = nullptr;
+
+    QLabel** speedLabels;
+    QLabel** toneLabels;
 
 	QVBoxLayout mainLayout;
 	QHBoxLayout controlsLayout;

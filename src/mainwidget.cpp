@@ -52,6 +52,8 @@ MainWidget::~MainWidget()
 
 	delete playButton;
 	delete stopButton;
+    delete speedSlider;
+    delete toneSlider;
 
 	delete keyboardWidget;
 	delete spectrumWidget;
@@ -124,6 +126,13 @@ void MainWidget::loadMusic()
 		spectrumWidget->calculateSpectrum(2048);
 	}
 
+    // Connect the slider to our audio
+    connect(speedSlider, SIGNAL(valueChanged(int)),
+            audio, SLOT(updateStretchFactor(int)));
+
+    connect(toneSlider, SIGNAL(valueChanged(int)),
+            audio, SLOT(updateToneTransposition(int)));
+
     delete dialog;
 }
 
@@ -134,7 +143,12 @@ void MainWidget::logic()
 		if(audio->isPlaying())
 		{
 			audio->update();
-			spectrumWidget->calculateSpectrum(2048);
+
+            int binSize = 2048;
+            if(audio->getStretchFactor() > 1)
+                binSize = 8192;
+
+            spectrumWidget->calculateSpectrum(binSize);
 		}
 	}
 }
@@ -188,6 +202,43 @@ void MainWidget::createButtons()
     followButton->setCheckable(true);
     followButton->setChecked(true);
     followButton->setToolTip("Follow the marker");
+
+    speedSlider = new QSlider(Qt::Orientation::Horizontal);
+    speedSlider->setMinimum(1);
+    speedSlider->setMaximum(4);
+    speedSlider->setTickPosition(QSlider::TicksAbove);
+    speedSlider->setSingleStep(1);
+    speedSlider->setTickInterval(1);
+    speedSlider->setMinimumSize(100, 50);
+    speedSlider->setToolTip("Stretch factor");
+
+    speedLabels = new QLabel*[4];
+    speedLabels[0] = new QLabel("1", speedSlider);
+    speedLabels[0]->move(5, 10);
+    speedLabels[1] = new QLabel("2", speedSlider);
+    speedLabels[1]->move(33, 10);
+    speedLabels[2] = new QLabel("3", speedSlider);
+    speedLabels[2]->move(60, 10);
+    speedLabels[3] = new QLabel("4", speedSlider);
+    speedLabels[3]->move(85, 10);
+
+    toneSlider = new QSlider(Qt::Orientation::Horizontal);
+    toneSlider->setMinimum(-12);
+    toneSlider->setMaximum(12);
+    toneSlider->setValue(0);
+    toneSlider->setTickPosition(QSlider::TicksAbove);
+    toneSlider->setSingleStep(1);
+    toneSlider->setTickInterval(2);
+    toneSlider->setMinimumSize(300, 50);
+    toneSlider->setToolTip("Transpose");
+
+    toneLabels = new QLabel*[3];
+    toneLabels[0] = new QLabel("-12", toneSlider);
+    toneLabels[0]->move(0, 10);
+    toneLabels[0] = new QLabel("0", toneSlider);
+    toneLabels[0]->move(146, 10);
+    toneLabels[0] = new QLabel("12", toneSlider);
+    toneLabels[0]->move(282, 10);
 }
 
 void MainWidget::createLayout()
@@ -199,6 +250,8 @@ void MainWidget::createLayout()
 	controlsLayout.addWidget(playButton);
 	controlsLayout.addWidget(stopButton);
     controlsLayout.addWidget(followButton);
+    controlsLayout.addWidget(speedSlider);
+    controlsLayout.addWidget(toneSlider);
 	controlsLayout.addStretch(32);
 
 	keyboardLayout.addWidget(keyboardWidget);

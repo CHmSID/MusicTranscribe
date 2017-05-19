@@ -1,6 +1,8 @@
 #ifndef AUDIO_H
 #define AUDIO_H
 
+#include <QWidget>
+
 #include <AL/al.h>
 #include <rubberband/RubberBandStretcher.h>
 
@@ -39,8 +41,9 @@ struct AudioInfo
 
 class QProgressDialog;
 
-class Audio
+class Audio : public QWidget
 {
+    Q_OBJECT
 public:
     Audio(const char* filename, QProgressDialog* dialog);
 	~Audio();
@@ -63,6 +66,8 @@ public:
 	unsigned long getDataSize() const;
 
 	bool isPlaying();
+    float getStretchFactor() const;
+    int getToneTranspos() const;
 
 private:
 	char* filename;
@@ -72,6 +77,11 @@ private:
 	bool paused;
 
     RubberBandStretcher* ts = nullptr;
+    bool stretcherDirty = false;
+    float stretchFactor = 1.0f;
+    int toneTranspos = 0;   // 0  = no transposition,
+                            // 12 = 1 octave up,
+                            //-12 = 1 octave down
 
 	// OpenAL variables
 	ALuint buffer[5]; // The queue of buffers to be played
@@ -110,6 +120,10 @@ private:
     unsigned char readByte(ifstream& file);
 
 	bool containsSuffix(string name, string suffix);
+
+public slots:
+    void updateStretchFactor(int i);
+    void updateToneTransposition(int i);
 };
 
 #endif // AUDIO_H

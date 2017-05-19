@@ -570,7 +570,9 @@ WaveformWidget::Marker::Marker(WaveformWidget* p, int pos, QVector3D col){
 	parent = p;
 
 	data = {(float)pos, 0.0f,   col.x(), col.y(), col.z(),
-	        (float)pos, 100.0f, col.x(), col.y(), col.z()};
+            (float)pos, 100.0f, col.x(), col.y(), col.z(),
+            (float)(pos + 1), 0.0f,   col.x(), col.y(), col.z(),
+            (float)(pos + 1), 100.0f, col.x(), col.y(), col.z()};
 
 	markerShader->bind();
 
@@ -584,8 +586,8 @@ WaveformWidget::Marker::Marker(WaveformWidget* p, int pos, QVector3D col){
 
 	markerShader->enableAttributeArray(0);
 	markerShader->enableAttributeArray(1);
-	markerShader->setAttributeBuffer(0, GL_FLOAT, 0, 2, 5 * sizeof(float));
-	markerShader->setAttributeBuffer(1, GL_FLOAT, 2 * sizeof(float), 3, 5 * sizeof(float));
+    markerShader->setAttributeBuffer(0, GL_FLOAT, 0, 2, 5 * sizeof(float));
+    markerShader->setAttributeBuffer(1, GL_FLOAT, 2 * sizeof(float), 3, 5 * sizeof(float));
 
 	vao.release();
 	vbo.release();
@@ -614,6 +616,6 @@ void WaveformWidget::Marker::setMatrices(const QMatrix4x4& proj, const QMatrix4x
 void WaveformWidget::Marker::render(){
 
 	vao.bind();
-	parent->glDrawArrays(GL_LINES, 0, data.size() / 5);
+    parent->glDrawArrays(GL_LINES, 0, data.size() / 5);
 	vao.release();
 }

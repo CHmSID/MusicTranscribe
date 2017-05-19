@@ -116,7 +116,7 @@ void SpectrumWidget::calculateSpectrum(int binSize)
 	// Padding will increase the resolution of the bin
 	// without taking additional samples
 
-	int genuineData = 2048; // How many actual samples we'll take from audio
+    int genuineData = 8192; // How many actual samples we'll take from audio
 	if(genuineData > binSize)
 		genuineData = binSize;
 
@@ -221,9 +221,10 @@ void SpectrumWidget::calculateSpectrum(int binSize)
 		int key = i + 3;
 		float freq = keyToFreq(key);
 
-		int startX = 0;
-		int endX = 0;
+        float startX = 0;
+        float endX = 0;
 		int height = 0;
+
 		float isWhite = keyboard->isKeyWhite(i);
 
 		if(keyboard->isKeyWhite(i))
@@ -245,6 +246,10 @@ void SpectrumWidget::calculateSpectrum(int binSize)
 			startX = keyboard->getKeyPosition(i);
 			endX = keyboard->getKeyPosition(i) + keyboard->getKeyWidth(i);
 		}
+
+        float width = endX - startX;
+        startX += audio->getToneTranspos() * width;
+        endX += audio->getToneTranspos() * width;
 
 		height = freq * 2.0f;
 

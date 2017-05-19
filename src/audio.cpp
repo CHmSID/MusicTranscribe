@@ -131,11 +131,11 @@ void Audio::setup()
 
 //	size = info.byteRate * 0.1f;
     size = 8192;
-	freq = info.sampleRate;
+    freq = info.sampleRate;
 
     ts = new RubberBandStretcher(info.sampleRate, info.numChannels,
                                  RubberBandStretcher::OptionProcessRealTime | RubberBandStretcher::OptionPitchHighConsistency,
-                                 2.0f, 1.0f);
+                                 1.0f, 1.0f);
 
 	reset();
 }
@@ -246,6 +246,17 @@ void Audio::update()
 	playing = (state == AL_PLAYING);
 
 	alGetSourcei(source, AL_BUFFERS_PROCESSED, &buffersProcessed);
+
+    // Update the stretch factor if we need to
+    if(stretcherDirty)
+    {
+        ts->setTimeRatio(stretchFactor);
+        float newPitchScale = 1.0f + toneTranspos / 12.0f;
+        if(newPitchScale == 0)
+            newPitchScale = 0.05f;
+        ts->setPitchScale(newPitchScale);
+        stretcherDirty = false;
+    }
 
 	// While the music is playing, and there are empty buffers that
 	// could be filled with data
@@ -459,6 +470,28 @@ void Audio::loadWAV()
     file.read((char*)&totalPcmData[0], info.dataSize);
 
     file.close();
+}
+
+float Audio::getStretchFactor() const
+{
+    return stretchFactor;
+}
+
+int Audio::getToneTranspos() const
+{
+    return toneTranspos;
+}
+
+void Audio::updateStretchFactor(int i)
+{
+    stretcherDirty = true;
+    stretchFactor = (float)i;
+}
+
+void Audio::updateToneTransposition(int i)
+{
+    stretcherDirty = true;
+    toneTranspos = i;
 }
 
 void Audio::checkForErrors(const char* prefix)
