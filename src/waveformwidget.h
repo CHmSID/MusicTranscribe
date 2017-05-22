@@ -22,6 +22,10 @@ class ScrollBar;
 
 using std::vector;
 
+/*
+ * WaveformWidget handles the rendering of the waveform and audio seeking
+ * through clicking and scrolling.
+ */
 class WaveformWidget: public QOpenGLWidget, protected QOpenGLFunctions
 {
 	Q_OBJECT
@@ -31,12 +35,15 @@ public:
 	               ScrollBar* scrollbar);
 	~WaveformWidget();
 
-	void generateData(Audio* music);
-	void clearChunks();
+    void generateData(Audio* music);    // Generates vertices and colors for
+                                        // OpenGL
+    void clearChunks();                 // Delete the chunks we have and
+                                        // Prepare for new audio to be loaded
 	void clearMarkers();
 
 	int getSize() const;
-	int getRelativePosition() const;
+    int getRelativePosition() const;    // The position of the playing head
+                                        // relative to the visible area
 
 public slots:
 	void logic();
@@ -62,7 +69,7 @@ private:
 
 	int size = 0;
 
-	// Determines the resolution of the waveform
+    // Determines the precision of the waveform
 	int samplesPerPixel = 750;
 
 	double xCurrentPosition = 0;
@@ -71,6 +78,7 @@ private:
 	int mousePressX = 0;
 	int mouseReleaseX = 0;
 
+    // A 512px wide sprite textured with audio data for optimisation reasons
 	class Chunk
 	{
 	public:
@@ -101,6 +109,8 @@ private:
 		int index;
 	};
 
+    // A marking on the waveform specifying some position. One of those us used
+    // to mark the playing head.
 	class Marker
 	{
 	public:

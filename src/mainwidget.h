@@ -24,6 +24,10 @@ class SpectrumWidget;
 class WaveformWidget;
 class ScrollBar;
 
+/*
+ * The MainWidget class contains every other widget of the application.
+ * It performs the main logic and makes everything tick.
+ */
 class MainWidget : public QWidget
 {
 	Q_OBJECT
@@ -85,6 +89,7 @@ private slots:
 	void playMusic();
 	void stopMusic();
 
+    // Auto-scroll
 	void turnOffMusicFollowing();
 
 protected slots:

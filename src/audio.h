@@ -54,7 +54,7 @@ public:
 
 	void play();
 	void pause();
-	void update(); // make it multi-threaded?
+    void update();
 	void reset();
 	void seek(int p);
 
@@ -66,8 +66,8 @@ public:
 	unsigned long getDataSize() const;
 
 	bool isPlaying();
-    float getStretchFactor() const;
-    int getToneTranspos() const;
+    float getStretchFactor() const; // Used by RubberBand
+    int getToneTranspos() const;    // Used by RubberBand
 
 private:
 	char* filename;
@@ -93,8 +93,8 @@ private:
 
 	// Raw PCM data
     vector<char> totalPcmData; // The whole song is kept in memory for
-	                                    // fast access outside the currently
-	                                    // loaded buffers
+                               // fast access outside the currently
+                               // loaded buffers
 	unsigned long totalPcmDataIndex = 0; // Current position in the song
 	unsigned long currentProgressIndex = 0;
 
@@ -111,9 +111,12 @@ private:
     void loadOGG();
 
     vector<char> timeStretch(vector<char>& data);
+
+    // Convert vector<float> to vector<char> and vice versa
     vector<char> floatToCharVector(vector<float> input, int bitrate);
     vector<float> charToFloatVector(vector<char> input, int bitrate);
 
+    // WAV loading utility functions
     unsigned int readInt(ifstream& file);
     short readShort(ifstream& file);
     string readChar(ifstream& file, int n);

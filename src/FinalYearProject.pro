@@ -25,24 +25,20 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    fft_test.cpp \
     audio.cpp \
     mainwidget.cpp \
     keyboardwidget.cpp \
     waveformwidget.cpp \
     spectrumwidget.cpp \
-    scrollbar.cpp \
-    util.cpp
+    scrollbar.cpp
 
 HEADERS  += mainwindow.h \
-    fft_test.h \
     audio.h \
     mainwidget.h \
     keyboardwidget.h \
     waveformwidget.h \
     spectrumwidget.h \
-    scrollbar.h \
-    util.h
+    scrollbar.h
 
 LIBS += -lopenal -lpthread\
         -lmpg123\

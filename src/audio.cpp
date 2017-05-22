@@ -129,12 +129,12 @@ void Audio::setup()
 	else
 		qDebug() << "Wrong number of channels";
 
-//	size = info.byteRate * 0.1f;
     size = 8192;
     freq = info.sampleRate;
 
     ts = new RubberBandStretcher(info.sampleRate, info.numChannels,
-                                 RubberBandStretcher::OptionProcessRealTime | RubberBandStretcher::OptionPitchHighConsistency,
+                                 RubberBandStretcher::OptionProcessRealTime |
+                                 RubberBandStretcher::OptionPitchHighConsistency,
                                  1.0f, 1.0f);
 
 	reset();
@@ -142,19 +142,22 @@ void Audio::setup()
 
 vector<char> Audio::timeStretch(vector<char>& inData)
 {
-//    if(ratio == 1)
-//        return data;  // Do not waste time on processing for no reason
+    if(stretchFactor == 1 && toneTranspos == 0)
+        return inData;  // Do not waste time on processing for no reason
 
     vector<float> data =  charToFloatVector(inData, info.bitRate);
 
+    // A frame is data from all the channels at a given point in time
     int inFrames = data.size() / info.numChannels;
     ts->setExpectedInputDuration(inFrames);
 
     vector<float> output;
 
-    int ibs = 1024;
-    float *fbuf = new float[info.numChannels * ibs];
-    float **ibuf = new float *[info.numChannels];
+    int ibs = 1024; // Process the data in chunks of this size
+    float *fbuf = new float[info.numChannels * ibs];// Intermediate step between
+                                                    // vector data and ibuf
+    float **ibuf = new float *[info.numChannels];   // Stretcher expects
+                                                    // 2D array
 
     for (size_t i = 0; i < info.numChannels; ++i)
         ibuf[i] = new float[ibs];
@@ -165,8 +168,9 @@ vector<char> Audio::timeStretch(vector<char>& inData)
 
         int count = ibs;
         int frameIdx = frame * info.numChannels;
-        fbuf = &data[frameIdx];
+        fbuf = &data[frameIdx]; // Point the array to memory location of data
 
+        // Translate 1D array to 2D array
         for (size_t c = 0; c < info.numChannels; ++c) {
 
             for (int i = 0; i < count; ++i) {
@@ -192,6 +196,7 @@ vector<char> Audio::timeStretch(vector<char>& inData)
             ts->retrieve(obf, avail);
             float *fobf = new float[info.numChannels * avail];
 
+            // Translate 2D array back to 1D
             for (size_t c = 0; c < info.numChannels; ++c) {
 
                 for (int i = 0; i < avail; ++i) {
@@ -208,6 +213,7 @@ vector<char> Audio::timeStretch(vector<char>& inData)
                 }
             }
 
+            // Populate the output vector with the data we processed
             for(int i = 0; i < info.numChannels * avail; ++i){
                 output.push_back(fobf[i]);
             }
@@ -277,6 +283,7 @@ void Audio::update()
 		if(totalPcmData.size() - trueSize < totalPcmDataIndex)
 			trueSize = totalPcmData.size() - totalPcmDataIndex;
 
+        // Process the data before filling the OpenAL buffer with it
         vector<char> dataToProcess(totalPcmData.begin() + totalPcmDataIndex,
                                    totalPcmData.begin() + totalPcmDataIndex + trueSize);
         vector<char> processedData = timeStretch(dataToProcess);
@@ -285,6 +292,7 @@ void Audio::update()
                      format, &processedData[0],
                      processedData.size() * sizeof(char), freq);
 
+        // Process the index by the amount of samples we used for this buffer
 		totalPcmDataIndex += trueSize;
 
 		alSourceQueueBuffers(source, 1, &buffer[bufferIndex]);
@@ -309,9 +317,6 @@ void Audio::seek(int p)
 
 	bool wasPlaying = isPlaying();
 
-	//play();
-	//pause();
-
 	alSourceStop(source);
 	playing = false;
 
@@ -323,6 +328,7 @@ void Audio::seek(int p)
 
 	alSourceUnqueueBuffers(source, 5, &buffer[0]);
 
+    // Preload 5 buffers
     for(int i = 0; i < 5; i++)
     {
         int trueSize = size;
@@ -353,7 +359,7 @@ void Audio::seek(int p)
 void Audio::loadMP3()
 {
 	info.riffHeader = "MP3";
-	info.bitRate = 16;  // load it from the file?
+    info.bitRate = 16;
 	info.dataSize = 0;
 
 	// Use mpg123 decoder to decode compressed mp3 data into PCM

@@ -13,6 +13,10 @@
 
 class MainWidget;
 
+/*
+ * MinWindow contains the MainWidget object. It also gives access
+ * to the menu bar and status.
+ */
 class MainWindow : public QMainWindow
 {
     Q_OBJECT

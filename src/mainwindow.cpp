@@ -8,7 +8,7 @@
 MainWindow::MainWindow(QApplication *parent)
     :parent(parent)
 {
-	setWindowTitle("4th Year Project");
+    setWindowTitle("4th Year Project - Music Transcription");
 	setWindowIcon(QIcon(":/data/icons/main.png"));
 	mainWidget = new MainWidget(parent, this);
 	setCentralWidget(mainWidget);
@@ -56,7 +56,7 @@ QLabel* MainWindow::getStatusText() const
  *
  * It also handles saving of position and size of the window
  * before it's closed, so when the user opens the application
- * it'll remember it's last position.
+ * it'll remember its last position.
  */
 void MainWindow::closeEvent(QCloseEvent *event)
 {

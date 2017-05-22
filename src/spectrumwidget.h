@@ -19,6 +19,9 @@ using std::complex;
 class KeyboardWidget;
 class Audio;
 
+/*
+ * Takes care of calculating and rendering the spectrum.
+ */
 class SpectrumWidget: public QOpenGLWidget, protected QOpenGLFunctions
 {
 	Q_OBJECT
@@ -29,6 +32,9 @@ public:
 
 public slots:
 	void calculateSpectrum(int size);
+
+    // Can not be done in a constructor as the audio might not exist
+    // on instantiation.
     void connectToAudio(Audio* a);
 
 private slots:

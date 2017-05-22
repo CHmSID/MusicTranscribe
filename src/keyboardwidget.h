@@ -35,7 +35,7 @@ public:
 	QMatrix4x4 getModelMatrix() const;
 
 private:
-	QTimer* logicTimer;
+    QTimer* logicTimer; // Triggers an update loop
 
 	QApplication* parentApp = nullptr;
 	MainWidget* parentWid = nullptr;
@@ -85,7 +85,7 @@ private:
 signals:
 
 public slots:
-	void logic();
+    void logic();   // Update loop
     void setPosition(int);
 
 signals:

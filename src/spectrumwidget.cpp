@@ -58,6 +58,7 @@ void SpectrumWidget::paintGL()
 	}
 }
 
+// On window resize
 void SpectrumWidget::resizeGL(int width, int height)
 {
 	projectionMatrix.setToIdentity();
@@ -114,7 +115,7 @@ void SpectrumWidget::calculateSpectrum(int binSize)
 
 	// Calculate how much data needs to be padded
 	// Padding will increase the resolution of the bin
-	// without taking additional samples
+    // without taking additional samples (less samples = more accuracy in higher ranges)
 
     int genuineData = 8192; // How many actual samples we'll take from audio
 	if(genuineData > binSize)
@@ -333,6 +334,7 @@ void SpectrumWidget::fft(vector<complex<double> >& x) // taken from wikipedia
 	}
 }
 
+// Maps a key to the closes frequency bin we possess
 float SpectrumWidget::keyToFreq(int key)
 {
 	float f = pow(2.0f, (key - 49) / 12.0f) * 440.0f;

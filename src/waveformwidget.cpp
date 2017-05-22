@@ -6,6 +6,7 @@
 
 #include <math.h>
 
+// Initialise static variables
 QOpenGLShaderProgram* WaveformWidget::Chunk::shader = new QOpenGLShaderProgram();
 QOpenGLShaderProgram* WaveformWidget::Chunk::texShader = new QOpenGLShaderProgram();
 bool WaveformWidget::Chunk::shadersInitialised = false;
@@ -112,10 +113,7 @@ void WaveformWidget::logic()
 
 	if(followMarker && scrollbar != nullptr)
 	{
-//		if(getRelativePosition() > width() / 2)
-//		{
-		    scrollbar->addValue(getRelativePosition() - width() / 2.0f);
-//		}
+         scrollbar->addValue(getRelativePosition() - width() / 2.0f);
 	}
 
 	update();
@@ -205,6 +203,7 @@ void WaveformWidget::mouseReleaseEvent(QMouseEvent *event)
     }
 }
 
+// Updates matrices if something moved
 void WaveformWidget::updateMatrices()
 {
 	if(Chunk::shadersInitialised){
@@ -608,8 +607,6 @@ void WaveformWidget::Marker::setMatrices(const QMatrix4x4& proj, const QMatrix4x
 		                              proj);
 		markerShader->setUniformValue("modelMatrix",
 		                              mod);
-
-//        parent->dirtyMatrix = false;
 	}
 }
 

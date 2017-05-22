@@ -90,7 +90,8 @@ void MainWidget::loadMusic()
 		audio = nullptr;
 	}
 
-    QProgressDialog* dialog = new QProgressDialog("text", "cancel", 0, 100, this);
+    // Loading dialog for long songs
+    QProgressDialog* dialog = new QProgressDialog("Loading", "cancel", 0, 100, this);
     dialog->show();
     dialog->setMinimumDuration(3000);
     dialog->setAutoReset(false);
@@ -144,6 +145,8 @@ void MainWidget::logic()
 		{
 			audio->update();
 
+            // If we're playing in real time, use small window size,
+            // otherwise be more accurate
             int binSize = 2048;
             if(audio->getStretchFactor() > 1)
                 binSize = 8192;
@@ -292,6 +295,7 @@ void MainWidget::setFollowingMusicMarker(bool set)
 	followMusicMarker = set;
 }
 
+// Creates OpenAL context
 void MainWidget::initAudio()
 {
 	const ALCchar* defaultDevice = alcGetString(

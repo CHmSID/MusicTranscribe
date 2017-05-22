@@ -4,6 +4,10 @@
 #include <QScrollBar>
 #include <QWidget>
 
+/*
+ * An extension of QScrollBar with changes allowing to
+ * increment and decrement the value of the scrollbar.
+ */
 class ScrollBar : public QScrollBar
 {
 	Q_OBJECT

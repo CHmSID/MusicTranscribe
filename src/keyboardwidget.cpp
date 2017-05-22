@@ -46,6 +46,7 @@ void KeyboardWidget::initializeGL()
 	int whiteWidth = 24;
 	int blackWidth = 14;
 
+    // Generate each key of the keyboard
 	for(int i = 0; i < 98; i++){
 
 		int k = (i + 11) % 12;
@@ -91,7 +92,7 @@ void KeyboardWidget::initializeGL()
 			x += width / 2;
 	}
 
-	totalWidth = x;
+    totalWidth = x; // Width of the keyboard in pixels
 }
 
 void KeyboardWidget::paintGL()
@@ -99,11 +100,13 @@ void KeyboardWidget::paintGL()
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	Key::keyShader->bind();
+    // Render white keys first
 	for(unsigned i = 0; i < keys.size(); i++){
 
 		if(keys[i]->isWhite())
 			keys[i]->render();
 	}
+    // Then render black keys to overlay the white keys
 	for(unsigned i = 0; i < keys.size(); i++){
 
 		if(!keys[i]->isWhite())
@@ -135,6 +138,7 @@ void KeyboardWidget::wheelEvent(QWheelEvent *event)
     clampToWidget();
 }
 
+// Change position when resizing
 void KeyboardWidget::clampToWidget()
 {
     if(xCurrentPosition >= getWidth() - width())

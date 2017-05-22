@@ -1,5 +1,6 @@
 #include "scrollbar.h"
 
+// See the header for explanation
 ScrollBar::ScrollBar(Qt::Orientation s, QWidget* parent)
     : QScrollBar(s, parent)
 {
